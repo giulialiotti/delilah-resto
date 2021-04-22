@@ -1,0 +1,262 @@
+openapi: 3.0.1
+
+info:
+  title: Proyecto Delilah Restó
+  description: Sistema de pedidos online para un restaurante
+  termsOfService: http://localhost:5500
+  contact:
+    name: Delilah Restó
+    url: http://www.delilahresto.com/support
+    email: contacto@delilahresto.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+
+servers:
+- url: http://localhost:4000
+  description: Delilah Restó Server
+
+tags:
+- name: Users
+  description: Operations about users
+- name: Orders
+  description: Operations about orders
+- name: Products
+  description: Operations about products
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Create new user.
+      description: Registration form.
+      operationId: newUser
+      requestBody:
+        required: true
+        description: Created user object.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              username: username
+              name: name and surname
+              email: example@email.com
+              phone: 1114635789
+              address: Street and number
+              password: password
+      responses:
+        200:
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    default: Successful registration
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Login user 
+      operationId: loginUser
+      requestBody:
+        required: true
+        description: User information for login
+        content:
+          application/json:
+            schema:
+              example:
+                username: username
+                password: password
+            examples:
+              username:
+                value:
+                  username: username
+                  password: password
+              email:
+                value:
+                  eamil: example@example.com
+                  password: password
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    default: Successful login
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users 
+      operationId: getUsers
+      description: Get all users if request is done by Admin
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      operationId: getUserId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: The user has been deleted successfully
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders 
+      operationId: getOrders
+      description: Get all orders if request is done by Admin
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user:
+          type: string
+        name:
+          type: string 
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum:
+            - Admin
+            - Client
+        token:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    Unauthorized:
+      description: Authorization information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                example: Unauthorized - No token provided
+
+    
+
+        
