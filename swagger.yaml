@@ -191,6 +191,41 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   
   /orders:
+    post:
+      tags:
+        - Orders
+      summary: Create a order
+      operationId: createOrder
+      requestBody:
+        required: true
+        description: Create a new order
+        content:
+          application/json:
+            schema:
+              example:
+                id: 0
+                user_id: 3
+                order_time: 22
+                order_status: new
+                payment_method: debit card
+                quantity: 1
+                total: 329
+      responses:
+        200:
+          description: Order successfuly created 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    default: Order successfuly created
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
     get:
       tags:
         - Orders
@@ -205,7 +240,196 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Order'
+                  $ref: '#/components/schemas/Orders'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      operationId: getOrderId
+      parameters:
+      - in: path
+        name: orderId
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Orders
+      summary: Update a order
+      operationId: updateOrder
+      parameters:
+      - in: path
+        name: orderId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Order successfuly updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Orders
+      summary: Delete a order
+      operationId: deleteOrder
+      parameters:
+      - in: path
+        name: orderId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: The order has been deleted successfully
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /products:
+    post:
+      tags:
+        - Products
+      summary: Create product 
+      operationId: createProduct
+      requestBody:
+        required: true
+        description: Create a new product
+        content:
+          application/json:
+            schema:
+              example:
+                id: 0
+                description: Veggie Sandwich
+                price: 450
+                img_url: https://unsplash.com/photos/3tL4vtrFqTQ
+      responses:
+        200:
+          description: Product successfuly created 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    default: Product successfuly created
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      operationId: getProducts
+      description: Get all products if request is done by Admin
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      operationId: getProductId
+      parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Products
+      summary: Update a product
+      operationId: updateProduct
+      parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Product successfuly updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      operationId: deleteProduct
+      parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: The product has been deleted successfully
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
 
 components:
   schemas:
@@ -234,6 +458,47 @@ components:
             - Client
         token:
           type: integer
+
+    Orders:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        order_time: 
+          type: string
+        order_status:
+          type: string
+          enum:
+            - new
+            - confirmed
+            - preparing
+            - sending
+            - delivering
+            - cancelled
+        payment_method:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        total:
+          type: number
+
+    Products:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        description:
+          type: string
+        price:
+          type: string
+        img_url:
+          type: string
 
   responses:
     BadRequest:
