@@ -1,0 +1,27 @@
+{
+  "name": "proyecto-delilah-resto",
+  "version": "1.0.0",
+  "description": "Online ordering system for a restaurant.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giulialiotti/delilah-resto.git"
+  },
+  "author": "Giuliana Aliotti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/giulialiotti/delilah-resto/issues"
+  },
+  "homepage": "https://github.com/giulialiotti/delilah-resto#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
