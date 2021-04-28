@@ -24,8 +24,10 @@ create table users (
 create table orders (
     ID int primary key not null AUTO_INCREMENT,
     ID_user int not null,
-    order_time varchar(8) not null,
-    order_status varchar(20) not null,
+    order_time date not null,
+    order_status enum('new', 'confirmed',
+'preparing', 'sending', 'delivering',
+'cancelled') not null,
     payment_method varchar(30) not null,
     quantity numeric not null,
     total numeric not null
@@ -34,7 +36,8 @@ create table orders (
 create table ordertoproducts (
     ID int primary key not null AUTO_INCREMENT,
     order_id integer,
-    product_id integer
+    product_id integer,
+    quantity numeric not null
 );
 
 
