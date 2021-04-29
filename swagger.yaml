@@ -205,10 +205,9 @@ paths:
               example:
                 id: 0
                 user_id: 3
-                order_time: 22
+                order_time: "2021-04-28 12:55:00"
                 order_status: new
                 payment_method: debit card
-                quantity: 1
                 total: 329
       responses:
         200:
@@ -481,9 +480,6 @@ components:
             - cancelled
         payment_method:
           type: string
-        quantity:
-          type: integer
-          format: int64
         total:
           type: number
 

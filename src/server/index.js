@@ -6,13 +6,9 @@ const routes = require('./routes');
 
 app.use(morgan('combined'));
 
-// // Body parser
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
-
-// Parsers for POST data
-app.use(express.json());
+// Body parser
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Serve static files
 app.use(express.static('public'));
