@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
-
-const users = [];
+const jwt = require('jsonwebtoken');
+const privateKey = "privateKey";
 
 // Register a new user
 app.post("/register", (req, res) => {
@@ -11,14 +11,14 @@ app.post("/register", (req, res) => {
     if (username && email && password) {
         const userInfo = {username, email, password};
         if (users.find(item => item.email === email )) {
-            return res.status(400).json({ msg: "Usuario registrado" });
+            return res.status(400).json({ msg: "Registered user" });
         }
         users.push(userInfo);
         console.log(users);
-        return res.send("registrado");
+        return res.send("Registered user");
     }
 
-    return res.status(400).json({ msg: "Error Register" });
+    return res.status(400).json({ msg: "Registry error" });
 })
 
 // User login (debe poder ingresar con el usuario o email)
@@ -30,7 +30,16 @@ app.post("/login", (req, res) => {
     const userDB = users.find(item => item.email === username);
     if (userDB) {
       if(userDB.password === password) {
-          return res.send("loggeado");
+        const token = jwt.sign({
+            username: userDB.username,
+            email: userDB.email,
+        }, privateKey);
+        const userIndex = users.findIndex(item => item.email === username);
+        users[userIndex].token = token;
+        return res.json({
+            token,
+            msg: 'User logged in',
+        });
       }
     }
     return res.status(400).json({ msg: "Error Login" });
