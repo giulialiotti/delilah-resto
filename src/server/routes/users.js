@@ -1,32 +1,60 @@
 const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
+const bcrypt = require('bcrypt');
+const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const privateKey = "privateKey";
 
 // Register a new user
-app.post("/register", (req, res) => {
-    const {username, email, password} = req.body;
-    console.log(req.body);
-    if (username && email && password) {
-        const userInfo = {username, email, password};
-        if (users.find(item => item.email === email )) {
-            return res.status(400).json({ msg: "Registered user" });
-        }
-        users.push(userInfo);
-        console.log(users);
-        return res.send("Registered user");
+app.post("/register", [
+    check('username', 'El nombre de usuario es obligatorio').not().isEmpty(),
+    check('pass', 'El password es obligatorio').not().isEmpty(),
+    check('email', 'El email debe estar correcto').isEmail()
+], async (req, res) => {
+    // const {username, email, password} = req.body;
+    // const users = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT });
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() })
     }
 
-    return res.status(400).json({ msg: "Registry error" });
+    // Encripta la contraseña 
+    req.body.pass = bcrypt.hashSync(req.body.pass, 10);
+    
+    try {
+        await sequelize.query('INSERT INTO users (username, name_and_surname, email, phone, shipping_address, pass, rol, token) VALUES \
+        (:username, :name_and_surname, :email, :phone, :shipping_address, :pass, :rol, :token);', {
+            replacements: {
+                ...req.body,
+            },
+        });
+        return res.json({ message: 'Usuario creado correctamente.'}); 
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: error.message });
+    }
 })
+
+// if (username && email && password) {
+//     // const userInfo = {username, email, password};
+//     // if (users.find(item => item.email === email )) {
+//     //     return res.status(400).json({ msg: "Registered user" });
+//     // }
+//     // users.push(userInfo);
+//     // console.log(users);
+//     return res.send("Registered user");
+// }
+
+// return res.status(400).json({ msg: "Registry error" });
 
 // User login (debe poder ingresar con el usuario o email)
 app.post("/login", (req, res) => {
     console.log(req.body);
   
     const { username, password } = req.body;
-  
+    
     const userDB = users.find(item => item.email === username);
     if (userDB) {
       if(userDB.password === password) {
