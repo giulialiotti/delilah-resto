@@ -1,79 +1,85 @@
+require('dotenv').config();
+
 const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
 const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const privateKey = "privateKey";
 
-// Register a new user
+/* ---------------------------------------------------------------------------------------
+------------------------------------- REGISTER USER --------------------------------------
+--------------------------------------------------------------------------------------- */
+
 app.post("/register", [
-    check('username', 'El nombre de usuario es obligatorio').not().isEmpty(),
-    check('pass', 'El password es obligatorio').not().isEmpty(),
-    check('email', 'El email debe estar correcto').isEmail()
+    check('username', 'The username is required.').not().isEmpty(),
+    check('password', 'The password is required.').not().isEmpty(),
+    check('email', 'The email must be correct.').isEmail(),
 ], async (req, res) => {
-    // const {username, email, password} = req.body;
-    // const users = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT });
+    const users = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT });
+    const { username, email } = req.body;
+    const user = users.find(user => user.username === username || user.email === email );
 
-    const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    }
+    if (!user) {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() })
+        }
 
-    // Encripta la contraseña 
-    req.body.pass = bcrypt.hashSync(req.body.pass, 10);
-    
-    try {
-        await sequelize.query('INSERT INTO users (username, name_and_surname, email, phone, shipping_address, pass, rol, token) VALUES \
-        (:username, :name_and_surname, :email, :phone, :shipping_address, :pass, :rol, :token);', {
-            replacements: {
-                ...req.body,
-            },
-        });
-        return res.json({ message: 'Usuario creado correctamente.'}); 
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({ message: error.message });
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+        
+        try {
+            await sequelize.query('INSERT INTO users (username, name_and_surname, email, phone, shipping_address, password, role) VALUES \
+            (:username, :name_and_surname, :email, :phone, :shipping_address, :password, :role);', {
+                replacements: {
+                    ...req.body
+                },  
+                type: sequelize.QueryTypes.INSERT
+            });
+            return res.json({ message: 'User created successfully.'}); 
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({ message: error.message });
+        }
+    } else {
+        res.send('The user has already been registered.')
     }
 })
 
-// if (username && email && password) {
-//     // const userInfo = {username, email, password};
-//     // if (users.find(item => item.email === email )) {
-//     //     return res.status(400).json({ msg: "Registered user" });
-//     // }
-//     // users.push(userInfo);
-//     // console.log(users);
-//     return res.send("Registered user");
-// }
+/* ---------------------------------------------------------------------------------------
+--------------- USER LOGIN (debe poder ingresar con el usuario o email) ------------------
+--------------------------------------------------------------------------------------- */
 
-// return res.status(400).json({ msg: "Registry error" });
+app.post("/login", async (req, res) => {
+    const users = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT });
 
-// User login (debe poder ingresar con el usuario o email)
-app.post("/login", (req, res) => {
-    console.log(req.body);
-  
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
+
+    const user = users.find(user => user.username === username || user.email === email );
     
-    const userDB = users.find(item => item.email === username);
-    if (userDB) {
-      if(userDB.password === password) {
-        const token = jwt.sign({
-            username: userDB.username,
-            email: userDB.email,
-        }, privateKey);
-        const userIndex = users.findIndex(item => item.email === username);
-        users[userIndex].token = token;
-        return res.json({
-            token,
-            msg: 'User logged in',
-        });
-      }
+    if (user) {
+        const checkPassword = bcrypt.compareSync(password, user.password);
+        if (checkPassword) {
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+            const userIndex = users.findIndex(user => user.username === username);
+            users[userIndex].accessToken = accessToken;
+            console.log(user);
+            res.json({
+                accessToken: accessToken,
+                msg: 'User successfully logged in',
+            });
+        } else {
+            res.json({ error: "Error in user and/or password"});
+        }
+    } else {
+        res.json({ error: "Error in user and/or password"});
     }
-    return res.status(400).json({ msg: "Error Login" });
-  });
+});
 
-// Get all users
+/* ---------------------------------------------------------------------------------------
+------------------------------------- GET ALL USERS --------------------------------------
+--------------------------------------------------------------------------------------- */
+
 app.get('/list', async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT })
@@ -83,7 +89,10 @@ app.get('/list', async (req, res) => {
     }
 });
 
-// Get user by id
+/* ---------------------------------------------------------------------------------------
+------------------------------------ GET USER BY ID --------------------------------------
+--------------------------------------------------------------------------------------- */
+
 app.get('/:id', async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM users WHERE users.id = ?;', {
@@ -95,32 +104,38 @@ app.get('/:id', async (req, res) => {
     }
 });
 
-// Update user by id
+/* ---------------------------------------------------------------------------------------
+---------------------------------- UPDATE USER BY ID -------------------------------------
+--------------------------------------------------------------------------------------- */
+
 app.put('/update/:id', async (req, res) => {
     try {
         await sequelize.query('UPDATE users \
         SET username = :username, name_and_surname = :name_and_surname, email = :email, \
-        phone = :phone, shipping_address = :shipping_address, pass = :pass, rol = :rol, token = :token \
+        phone = :phone, shipping_address = :shipping_address, password = :password, role = :role, token = :token \
         WHERE users.id = :id', {
             replacements: {
                 ...req.body,
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'Usuario actualizado correctamente.'}); 
+        return res.json({ message: 'User updated successfully.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });
     }
 });
 
-// Delete user by id
+/* ---------------------------------------------------------------------------------------
+---------------------------------- DELETE USER BY ID -------------------------------------
+--------------------------------------------------------------------------------------- */
+
 app.delete('/delete/:id', async (req, res) => {
     try {
         await sequelize.query('DELETE FROM users WHERE users.id = ?', {
             replacements: [req.params.id],
         });
-        return res.json({ message: 'Usuario eliminado correctamente.'}); 
+        return res.json({ message: 'User deleted successfully.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });
