@@ -16,28 +16,26 @@ create table users (
     email  varchar(100) not null,
     phone numeric not null,
     shipping_address varchar(120) not null, 
-    pass varchar(30) not null,
-    rol ENUM('Admin', 'Basic') not null,
-    token text not null                  
+    password varchar(120) not null,
+    role ENUM('Admin', 'Basic') not null,                
 );
 
 create table orders (
     ID int primary key not null AUTO_INCREMENT,
     ID_user int not null,
-    order_time date not null,
+    order_time datetime not null,
     order_status enum('new', 'confirmed',
 'preparing', 'sending', 'delivering',
 'cancelled') not null,
     payment_method varchar(30) not null,
-    quantity numeric not null,
-    total numeric not null
+    total decimal not null
 );
 
 create table ordertoproducts (
     ID int primary key not null AUTO_INCREMENT,
     order_id integer,
     product_id integer,
-    quantity numeric not null
+    quantity decimal not null
 );
 
 

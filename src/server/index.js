@@ -5,6 +5,8 @@ const app = express();
 const PORT = 3000;
 const routes = require('./routes');
 
+const authToken = require('../middlewares/authToken');
+
 app.use(morgan('combined'));
 app.use(cors());
 
@@ -13,8 +15,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Serve static files
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
+app.use(authToken);
 app.use('/api', routes);
 
 app.listen(3000, () => console.log(`Listening on port: ${PORT}`));
