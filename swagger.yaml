@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  title: Proyecto Delilah Restó
+  title: Delilah Restó
   description: Sistema de pedidos online para un restaurante
   termsOfService: http://localhost:5500
   contact:
@@ -14,7 +14,7 @@ info:
   version: 1.0.0
 
 servers:
-- url: http://localhost:4000
+- url: http://localhost:3000
   description: Delilah Restó Server
 
 tags:
@@ -47,21 +47,20 @@ paths:
               phone: 1114635789
               address: Street and number
               password: password
+              role: Basic
       responses:
         200:
-          description: Successful registration
+          description: User created successfully.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  msg:
+                  message:
                     type: string
                     default: Successful registration
         400:
           $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
   
   /users/login:
     post:
@@ -89,19 +88,19 @@ paths:
                   password: password
       responses:
         200:
-          description: Successful login
+          description: User successfully logged in
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  accesToken:
+                    type: string
                   msg:
                     type: string
-                    default: Successful login
+                    default: User successfully logged in
         400:
           $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
 
   /users:
     get:
@@ -184,7 +183,7 @@ paths:
           type: string
       responses:
         200:
-          description: The user has been deleted successfully
+          description: User deleted successfully.
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -203,23 +202,21 @@ paths:
           application/json:
             schema:
               example:
-                id: 0
-                user_id: 3
+                ID_user: 3
                 order_time: "2021-04-28 12:55:00"
-                order_status: new
                 payment_method: debit card
                 total: 329
       responses:
         200:
-          description: Order successfuly created 
+          description: Order successfuly created. 
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  msg:
+                  message:
                     type: string
-                    default: Order successfuly created
+                    default: Order successfuly created.
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -282,7 +279,7 @@ paths:
           type: string
       responses:
         200:
-          description: Order successfuly updated
+          description: Order successfuly updated.
           content:
             application/json:
               schema:
@@ -305,7 +302,15 @@ paths:
           type: string
       responses:
         200:
-          description: The order has been deleted successfully
+          description: The order has been deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: The order has been deleted successfully.
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -324,13 +329,12 @@ paths:
           application/json:
             schema:
               example:
-                id: 0
                 description: Veggie Sandwich
                 price: 450
-                img_url: https://unsplash.com/photos/3tL4vtrFqTQ
+                image_url: https://unsplash.com/photos/3tL4vtrFqTQ
       responses:
         200:
-          description: Product successfuly created 
+          description: Product successfuly created. 
           content:
             application/json:
               schema:
@@ -338,7 +342,7 @@ paths:
                 properties:
                   msg:
                     type: string
-                    default: Product successfuly created
+                    default: Product successfuly created.
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -401,7 +405,7 @@ paths:
           type: string
       responses:
         200:
-          description: Product successfuly updated
+          description: Product successfuly updated.
           content:
             application/json:
               schema:
@@ -424,7 +428,15 @@ paths:
           type: string
       responses:
         200:
-          description: The product has been deleted successfully
+          description: The product has been deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: The product has been deleted successfully.
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -435,18 +447,18 @@ components:
     User:
       type: object
       properties:
-        id:
+        ID:
           type: integer
           format: int64
-        user:
+        username:
           type: string
-        name:
+        name_and_surname:
           type: string 
         email:
           type: string
         phone:
           type: string
-        address:
+        shipping_address:
           type: string
         password:
           type: string
@@ -454,17 +466,15 @@ components:
           type: string
           enum:
             - Admin
-            - Client
-        token:
-          type: integer
+            - Basic
 
     Orders:
       type: object
       properties:
-        id:
+        ID:
           type: integer
           format: int64
-        user_id:
+        ID_user:
           type: integer
           format: int64
         order_time: 
@@ -486,14 +496,14 @@ components:
     Products:
       type: object
       properties:
-        id:
+        ID:
           type: integer
           format: int64
         description:
           type: string
         price:
-          type: string
-        img_url:
+          type: number
+        image_url:
           type: string
 
   responses:

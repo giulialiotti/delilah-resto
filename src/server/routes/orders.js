@@ -33,7 +33,7 @@ app.post('/new', async (req, res) => {
                 ...req.body,
             },
         });
-        return res.json({ message: 'Orden creada correctamente.'}); 
+        return res.json({ message: 'Order successfuly created.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });
@@ -51,7 +51,7 @@ app.put('/update/:id', async (req, res) => {
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'Orden actualizada correctamente.'}); 
+        return res.json({ message: 'Order successfuly updated.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });
@@ -67,7 +67,7 @@ app.delete('/delete/:id', async (req, res) => {
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'Orden eliminada correctamente.'}); 
+        return res.json({ message: 'The order has been deleted successfully.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });

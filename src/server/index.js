@@ -18,7 +18,7 @@ app.use(express.json());
 // app.use(express.static('public'));
 
 app.use(authToken);
-app.use('/api', routes);
+app.use('/', routes);
 
 app.listen(3000, () => console.log(`Listening on port: ${PORT}`));
 

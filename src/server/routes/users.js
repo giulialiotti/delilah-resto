@@ -112,7 +112,7 @@ app.put('/update/:id', async (req, res) => {
     try {
         await sequelize.query('UPDATE users \
         SET username = :username, name_and_surname = :name_and_surname, email = :email, \
-        phone = :phone, shipping_address = :shipping_address, password = :password, role = :role, token = :token \
+        phone = :phone, shipping_address = :shipping_address, password = :password, role = :role \
         WHERE users.id = :id', {
             replacements: {
                 ...req.body,
