@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
+const { adminAccess } = require('../../middlewares/authRole');
 
 // Get all
 app.get('/list', async (req, res) => {
@@ -25,7 +26,7 @@ app.get('/:id', async (req, res) => {
 });
 
 // Create
-app.post('/new', async (req, res) => {
+app.post('/new', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('INSERT INTO products (description, price, image_url) VALUES \
         (:description, :price, :image_url);', {
@@ -41,7 +42,7 @@ app.post('/new', async (req, res) => {
 });
 
 // Update
-app.put('/update/:id', async (req, res) => {
+app.put('/update/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('UPDATE products \
         SET description = :description, price = :price, image_url = :image_url \
@@ -59,7 +60,7 @@ app.put('/update/:id', async (req, res) => {
 });
 
 // Delete
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/delete/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('DELETE FROM products WHERE id = :id', {
             replacements: {

@@ -1,9 +1,10 @@
 const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
+const { authRoleGetOrderById, adminAccess } = require('../../middlewares/authRole');
 
 // Get all orders
-app.get('/list', async (req, res) => {
+app.get('/list', adminAccess(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM orders;', { type: sequelize.QueryTypes.SELECT })
         return res.json(results); 
@@ -13,7 +14,7 @@ app.get('/list', async (req, res) => {
 });
 
 // Get order by id
-app.get('/:id', async (req, res) => {
+app.get('/:id', authRoleGetOrderById(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM orders WHERE orders.id = ?;', {
             replacements: [req.params.id],
@@ -41,7 +42,7 @@ app.post('/new', async (req, res) => {
 });
 
 // Update a order
-app.put('/update/:id', async (req, res) => {
+app.put('/update/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('UPDATE orders \
         SET ID_user = :ID_user, order_time = :order_time, order_status = :order_status, payment_method = :payment_method, total = :total \
@@ -60,7 +61,7 @@ app.put('/update/:id', async (req, res) => {
 
 
 // Delete a order
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/delete/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('DELETE FROM orders WHERE id = :id', {
             replacements: {

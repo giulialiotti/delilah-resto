@@ -6,6 +6,7 @@ const sequelize = require('../../db');
 const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const { authRoleGetUserById, adminAccess }= require('../../middlewares/authRole');
 
 /* ---------------------------------------------------------------------------------------
 ------------------------------------- REGISTER USER --------------------------------------
@@ -80,7 +81,7 @@ app.post("/login", async (req, res) => {
 ------------------------------------- GET ALL USERS --------------------------------------
 --------------------------------------------------------------------------------------- */
 
-app.get('/list', async (req, res) => {
+app.get('/list', adminAccess(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT })
         return res.json(results); 
@@ -93,7 +94,7 @@ app.get('/list', async (req, res) => {
 ------------------------------------ GET USER BY ID --------------------------------------
 --------------------------------------------------------------------------------------- */
 
-app.get('/:id', async (req, res) => {
+app.get('/:id', authRoleGetUserById(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM users WHERE users.id = ?;', {
             replacements: [req.params.id],
@@ -108,7 +109,7 @@ app.get('/:id', async (req, res) => {
 ---------------------------------- UPDATE USER BY ID -------------------------------------
 --------------------------------------------------------------------------------------- */
 
-app.put('/update/:id', async (req, res) => {
+app.put('/update/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('UPDATE users \
         SET username = :username, name_and_surname = :name_and_surname, email = :email, \
@@ -130,7 +131,7 @@ app.put('/update/:id', async (req, res) => {
 ---------------------------------- DELETE USER BY ID -------------------------------------
 --------------------------------------------------------------------------------------- */
 
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/delete/:id', adminAccess(), async (req, res) => {
     try {
         await sequelize.query('DELETE FROM users WHERE users.id = ?', {
             replacements: [req.params.id],

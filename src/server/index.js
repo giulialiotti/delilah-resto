@@ -14,9 +14,6 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Serve static files
-// app.use(express.static('public'));
-
 app.use(authToken);
 app.use('/', routes);
 
