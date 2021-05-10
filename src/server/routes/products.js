@@ -2,6 +2,7 @@ const { Router } = require('express');
 const app = Router();
 const sequelize = require('../../db');
 const { adminAccess } = require('../../middlewares/authRole');
+const { check, validationResult } = require('express-validator');
 
 // Get all
 app.get('/list', async (req, res) => {
@@ -26,17 +27,35 @@ app.get('/:id', async (req, res) => {
 });
 
 // Create
-app.post('/new', adminAccess(), async (req, res) => {
-    try {
-        await sequelize.query('INSERT INTO products (description, price, image_url) VALUES \
-        (:description, :price, :image_url);', {
-            replacements: {
-                ...req.body,
-            },
-        });
-        return res.status(200).json({ message: 'Product successfuly created.'}); 
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
+app.post('/new', adminAccess(), [
+    check('description', 'The description is required.').not().isEmpty(),
+    check('price', 'The price is required.').not().isEmpty(),
+    check('image_url', 'The image url is required.').not().isEmpty(),
+], async (req, res) => {
+    const products = await sequelize.query('SELECT * FROM products;', { type: sequelize.QueryTypes.SELECT });
+    const { description } = req.body;
+    const product = products.find(product => product.description === description);
+
+    if (!product) {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() })
+        }
+
+        try {
+            await sequelize.query('INSERT INTO products (description, price, image_url) VALUES \
+            (:description, :price, :image_url);', {
+                replacements: {
+                    ...req.body,
+                },
+            });
+            return res.status(200).json({ message: 'Product successfuly created.'}); 
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+
+    } else {
+        res.status(400).send('The product already exists.')
     }
 });
 
