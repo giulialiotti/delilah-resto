@@ -12,12 +12,12 @@ function authRoleGetUserById() {
                     } else if (user.role == 'Basic' && user.ID == req.params.id) {
                         next();
                     } else {
-                        res.status(403).send({ message: 'No tenes permisos' });
+                        res.status(403).send({ message: 'You do not have the necessary permissions to enter.' });
                     }
                 }
             });
         } catch (error) {
-            res.send(error);
+            res.status(400).json(error);
         }
     }
 }
@@ -35,12 +35,12 @@ function authRoleGetOrderById() {
                     } else if (user.role == 'Basic' && userOrder[0].ID == req.params.id) {
                         next();
                     } else {
-                        res.status(403).send({ message: 'No tenes permisos' });
+                        res.status(403).send({ message: 'You do not have the necessary permissions to enter.' });
                     }
                 }
             });
         } catch (error) {
-            res.send(error);
+            res.status(400).json(error);
         }
     }
 }
@@ -54,14 +54,14 @@ function adminAccess() {
                     if (user.role == 'Admin') {
                         next();
                     } else {
-                        res.status(403).send({ message: 'No tenes permisos' });
+                        res.status(403).send({ message: 'You do not have the necessary permissions to enter.' });
                     }
                 } else {
                     console.log(error);
                 }
             });
         } catch (error) {
-            res.send(error);
+            res.status(400).json(error);
         }
     }
 }

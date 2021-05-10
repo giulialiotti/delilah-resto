@@ -7,9 +7,9 @@ const { authRoleGetOrderById, adminAccess } = require('../../middlewares/authRol
 app.get('/list', adminAccess(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM orders;', { type: sequelize.QueryTypes.SELECT })
-        return res.json(results); 
+        return res.status(200).json(results); 
     } catch (error) {
-        console.log(error);
+        return res.status(400).json({ error });
     }
 });
 
@@ -19,9 +19,9 @@ app.get('/:id', authRoleGetOrderById(), async (req, res) => {
         const results = await sequelize.query('SELECT * FROM orders WHERE orders.id = ?;', {
             replacements: [req.params.id],
             type: sequelize.QueryTypes.SELECT })
-        return res.json(results[0]); 
+        return res.status(200).json(results[0]); 
     } catch (error) {
-        console.log(error);
+        return res.status(400).json({ error });
     }
 });
 
@@ -34,9 +34,8 @@ app.post('/new', async (req, res) => {
                 ...req.body,
             },
         });
-        return res.json({ message: 'Order successfuly created.'}); 
+        return res.status(200).json({ message: 'Order successfuly created.'}); 
     } catch (error) {
-        console.log(error);
         return res.status(400).json({ message: error.message });
     }
 });
@@ -52,9 +51,8 @@ app.put('/update/:id', adminAccess(), async (req, res) => {
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'Order successfuly updated.'}); 
+        return res.status(200).json({ message: 'Order successfuly updated.'}); 
     } catch (error) {
-        console.log(error);
         return res.status(400).json({ message: error.message });
     }
 });
@@ -68,9 +66,8 @@ app.delete('/delete/:id', adminAccess(), async (req, res) => {
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'The order has been deleted successfully.'}); 
+        return res.status(200).json({ message: 'The order has been deleted successfully.'}); 
     } catch (error) {
-        console.log(error);
         return res.status(400).json({ message: error.message });
     }
 });

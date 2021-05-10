@@ -14,8 +14,11 @@ const { authRoleGetUserById, adminAccess }= require('../../middlewares/authRole'
 
 app.post("/register", [
     check('username', 'The username is required.').not().isEmpty(),
-    check('password', 'The password is required.').not().isEmpty(),
+    check('name_and_surname', 'The name and surname is required.').not().isEmpty(),
     check('email', 'The email must be correct.').isEmail(),
+    check('phone', 'The phone number is required.').not().isEmpty(),
+    check('shipping_address', 'The shipping address is required.').not().isEmpty(),
+    check('password', 'The password is required.').not().isEmpty(),
 ], async (req, res) => {
     const users = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT });
     const { username, email } = req.body;
@@ -31,19 +34,19 @@ app.post("/register", [
         
         try {
             await sequelize.query('INSERT INTO users (username, name_and_surname, email, phone, shipping_address, password, role) VALUES \
-            (:username, :name_and_surname, :email, :phone, :shipping_address, :password, :role);', {
+            (:username, :name_and_surname, :email, :phone, :shipping_address, :password, "Basic");', {
                 replacements: {
                     ...req.body
                 },  
                 type: sequelize.QueryTypes.INSERT
             });
-            return res.json({ message: 'User created successfully.'}); 
+            return res.status(200).json({ message: 'User created successfully.'}); 
         } catch (error) {
             console.log(error);
             return res.status(400).json({ message: error.message });
         }
     } else {
-        res.send('The user has already been registered.')
+        res.status(400).send('The user has already been registered.')
     }
 })
 
@@ -65,15 +68,15 @@ app.post("/login", async (req, res) => {
             const userIndex = users.findIndex(user => user.username === username);
             users[userIndex].accessToken = accessToken;
             console.log(user);
-            res.json({
+            res.status(200).json({
                 accessToken: accessToken,
                 msg: 'User successfully logged in',
             });
         } else {
-            res.json({ error: "Error in user and/or password"});
+            res.status(400).json({ error: "Error in user and/or password"});
         }
     } else {
-        res.json({ error: "Error in user and/or password"});
+        res.status(400).json({ error: "Error in user and/or password"});
     }
 });
 
@@ -84,9 +87,9 @@ app.post("/login", async (req, res) => {
 app.get('/list', adminAccess(), async (req, res) => {
     try {
         const results = await sequelize.query('SELECT * FROM users;', { type: sequelize.QueryTypes.SELECT })
-        return res.json(results); 
+        return res.status(200).json(results); 
     } catch (error) {
-        console.log(error);
+        res.status(400).json({ error });
     }
 });
 
@@ -99,9 +102,9 @@ app.get('/:id', authRoleGetUserById(), async (req, res) => {
         const results = await sequelize.query('SELECT * FROM users WHERE users.id = ?;', {
             replacements: [req.params.id],
             type: sequelize.QueryTypes.SELECT })
-        return res.json(results[0]); 
+        return res.status(200).json(results[0]); 
     } catch (error) {
-        console.log(error);
+        res.status(400).json({ error });
     }
 });
 
@@ -120,10 +123,9 @@ app.put('/update/:id', adminAccess(), async (req, res) => {
                 id: req.params.id,
             },
         });
-        return res.json({ message: 'User updated successfully.'}); 
+        return res.status(200).json({ message: 'User updated successfully.'}); 
     } catch (error) {
-        console.log(error);
-        return res.status(400).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -136,7 +138,7 @@ app.delete('/delete/:id', adminAccess(), async (req, res) => {
         await sequelize.query('DELETE FROM users WHERE users.id = ?', {
             replacements: [req.params.id],
         });
-        return res.json({ message: 'User deleted successfully.'}); 
+        return res.status(200).json({ message: 'User deleted successfully.'}); 
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: error.message });
