@@ -2,15 +2,9 @@ openapi: 3.0.1
 
 info:
   title: Delilah Restó
-  description: Sistema de pedidos online para un restaurante
-  termsOfService: http://localhost:5500
+  description: Online ordering system for a restaurant
   contact:
     name: Delilah Restó
-    url: http://www.delilahresto.com/support
-    email: contacto@delilahresto.com
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 
 servers:
@@ -121,6 +115,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
   /users/{id}:
     get:
@@ -145,6 +141,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     put:
       tags:
@@ -168,6 +166,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     delete:
       tags:
@@ -187,7 +187,9 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
-  
+      security:
+        - bearerAuth: []
+
   /orders/new: 
     post:
       tags:
@@ -220,6 +222,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
   /orders/list:
     get:
@@ -241,6 +245,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
   /orders/{id}:
     get:
@@ -265,6 +271,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     put:
       tags:
@@ -288,6 +296,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     delete:
       tags:
@@ -315,6 +325,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
   /products/new:
     post:
@@ -347,7 +359,9 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
-  
+      security:
+        - bearerAuth: []
+
   /products/list:
     get:
       tags:
@@ -368,6 +382,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
   /products/{id}:
     get:
@@ -392,6 +408,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     put:
       tags:
@@ -415,6 +433,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
     delete:
       tags:
@@ -442,6 +462,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
 
 components:
   schemas:
@@ -528,6 +550,12 @@ components:
               msg:
                 type: string
                 example: You do not have the necessary permissions to enter.
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
     
 
