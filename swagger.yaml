@@ -101,7 +101,7 @@ paths:
         400:
           $ref: '#/components/responses/BadRequest'
 
-  /users:
+  /users/list:
     get:
       tags:
         - Users
@@ -188,7 +188,7 @@ paths:
         403:
           $ref: '#/components/responses/Unauthorized'
   
-  /orders:
+  /orders/new: 
     post:
       tags:
         - Orders
@@ -221,6 +221,7 @@ paths:
         403:
           $ref: '#/components/responses/Unauthorized'
 
+  /orders/list:
     get:
       tags:
         - Orders
@@ -315,7 +316,7 @@ paths:
         403:
           $ref: '#/components/responses/Unauthorized'
 
-  /products:
+  /products/new:
     post:
       tags:
         - Products
@@ -346,7 +347,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           $ref: '#/components/responses/Unauthorized'
-
+  
+  /products/list:
     get:
       tags:
         - Products
